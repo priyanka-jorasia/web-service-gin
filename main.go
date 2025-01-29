@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -11,12 +13,20 @@ import (
 
 func main() {
 	router := gin.Default()
-	connect.InitDB()
+	err := connect.InitDB()
+	if err != nil {
+		return
+	}
+
 	var albumObject model.Album
 	router.GET("/albums", albumObject.GetAlbums)
-	router.GET("/albums/:id", albumObject.GetAlbumByID)  //200 OK
-	router.POST("/albums", albumObject.PostAlbums)       // 201 Created
-	router.PUT("/albums/:id", albumObject.PutAlbumsByID) // Update album
+	router.GET("/albums/:id", albumObject.GetAlbumByID)
+	router.POST("/albums", albumObject.PostAlbums)
+	router.PUT("/albums/:id", albumObject.PutAlbumsByID)
 	router.DELETE("/albums/:id", albumObject.DeleteAlbumByID)
-	router.Run("localhost:8080")
+	err2 := router.Run("localhost:8080")
+	if err2 != nil {
+		fmt.Println("Error in starting server!")
+		return
+	}
 }
